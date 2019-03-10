@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ADBTools</string>
+    <string name="status">ADB状态：%1$s</string>
+    <string name="statusMsg">命令：adb connect %1$s:%2$s</string>
+</resources>
