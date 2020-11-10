@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">ADBTools</string>
     <string name="status">ADB状态：%1$s</string>
-    <string name="statusMsg">命令：adb connect %1$s:%2$s</string>
-    <string name="statusMsgNoPort">命令：adb connect %1$s</string>
-    <string name="errorDialogTitle">出错啦！</string>
-    <string name="btnOk">好的，我知道了</string>
-    <string name="adbdClosed">您已关闭ADB调试！</string>
-    <string name="adbdRunning">已开启</string>
-    <string name="adbdNotRunning">未开启</string>
-    <string name="rootDeny">未开启</string>
-    <string name="rootUnGrant">ROOT权限未授予！无法操作！</string>
+    <string name="status_msg">命令：adb connect %1$s:%2$s</string>
+    <string name="status_msg_without_port">命令：adb connect %1$s</string>
+    <string name="error_dialog_title">出错啦！</string>
+    <string name="btn_ok">好的，我知道了</string>
+    <string name="adbd_closed">您已关闭ADB调试！</string>
+    <string name="adbd_running">已开启</string>
+    <string name="adbd_not_running">未开启</string>
+    <string name="root_deny">未开启</string>
+    <string name="root_un_grant">ROOT权限未授予！无法操作！</string>
 </resources>

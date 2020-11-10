@@ -1,15 +1,11 @@
 package com.lckiss.adbtools
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.CompoundButton
-import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
 import com.lckiss.adbtools.util.CmdUtils
 import com.lckiss.adbtools.util.WifiUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -45,8 +41,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             R.id.adbSwitchCompt -> {
                 if (!sp.getBoolean(KEY_IS_ROOT, false)) {
                     adbSwitchCompt.isChecked = false
-                    msg.text = getString(R.string.rootUnGrant)
-                    status_msg.text = resources.getString(R.string.status, getString(R.string.rootDeny))
+                    msg.text = getString(R.string.root_un_grant)
+                    status_msg.text = resources.getString(R.string.status, getString(R.string.root_deny))
                     return
                 }
                 if (isChecked) {
@@ -64,7 +60,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 } else {
                     sp.edit().putBoolean(KEY_IS_ROOT, false).apply()
                     rootSwitchCompt.isChecked = false
-                    msg.text = getString(R.string.rootDeny)
+                    msg.text = getString(R.string.root_deny)
                 }
             } else {
                 sp.edit().putBoolean(KEY_IS_ROOT, false).apply()
@@ -79,8 +75,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 "stop adbd"
         )
         val result = CmdUtils.execute(cmd)
-        status_msg.text = resources.getString(R.string.status, getString(R.string.adbdNotRunning))
-        msg.text = getString(R.string.adbdClosed)
+        status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_not_running))
+        msg.text = getString(R.string.adbd_closed)
         val successMsg = result.successMsg
         val errorMsg = result.errorMsg
         if (!TextUtils.isEmpty(errorMsg)) {
@@ -110,19 +106,19 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         val ipAddress = WifiUtils.getIpAddress(this)
         val msgRes: String
         msgRes = if (p == DEFAULT_PORT) {
-            resources.getString(R.string.statusMsgNoPort, ipAddress)
+            resources.getString(R.string.status_msg_without_port, ipAddress)
         } else {
-            resources.getString(R.string.statusMsg, ipAddress, p)
+            resources.getString(R.string.status_msg, ipAddress, p)
         }
         msg.text = msgRes
-        status_msg.text = resources.getString(R.string.status, getString(R.string.adbdRunning))
+        status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_running))
     }
 
     private fun errorDialog(msg: String) {
         AlertDialog.Builder(this)
-                .setTitle(R.string.errorDialogTitle)
+                .setTitle(R.string.error_dialog_title)
                 .setMessage(msg)
-                .setPositiveButton(getString(R.string.btnOk), null).show()
+                .setPositiveButton(getString(R.string.btn_ok), null).show()
     }
 
     companion object {
