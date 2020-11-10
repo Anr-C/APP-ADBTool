@@ -2,13 +2,14 @@ package com.lckiss.adbtools;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.lckiss.adbtools.util.CmdUtils;
 import com.lckiss.adbtools.util.WifiUtils;
@@ -16,6 +17,8 @@ import com.lckiss.adbtools.util.WifiUtils;
 public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = "MainActivity";
+    private static final  String DEFAULT_PORT = "5555";
+
     private EditText port;
     private TextView status;
     private TextView msg;
@@ -45,6 +48,18 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         rootSwitch.setOnCheckedChangeListener(this);
         adbSwitch.setOnCheckedChangeListener(this);
+
+        boolean running = isRunning();
+        adbSwitch.setChecked(running);
+        if (running){
+            refreshTvInfo();
+        }
+    }
+
+    public boolean isRunning(){
+        return CmdUtils.execute(new String[]{
+                "getprop init.svc.adbd"
+        }).successMsg.contains("running");
     }
 
     @Override
@@ -114,9 +129,18 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             errorDialog(errorMsg);
             return;
         }
+        refreshTvInfo();
+    }
 
+    private void refreshTvInfo() {
+        String p = port.getText().toString().trim();
         String ipAddress = WifiUtils.getIpAddress(this);
-        String msgRes = getResources().getString(R.string.statusMsg, ipAddress, p);
+        String msgRes;
+        if (p.equals(DEFAULT_PORT)){
+            msgRes = getResources().getString(R.string.statusMsgNoPort, ipAddress);
+        }else {
+            msgRes = getResources().getString(R.string.statusMsg, ipAddress, p);
+        }
         msg.setText(msgRes);
         status.setText(getResources().getString(R.string.status, "已开启"));
     }
