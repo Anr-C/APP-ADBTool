@@ -42,16 +42,16 @@ object CmdUtils {
             // 当前线程等待，直到process线程执行结束
             process.waitFor()
 
-            var s: String
+            var s: String? = null
             val successReader = BufferedReader(InputStreamReader(process.inputStream))
             successReader.use {
-                while (successReader.readLine().also { s = it } != null) {
+                while (successReader.readLine()?.also { s = it } != null) {
                     successMsg.append(s).append("\n")
                 }
             }
             val errorReader = BufferedReader(InputStreamReader(process.errorStream))
             errorReader.use {
-                while (errorReader.readLine().also { s = it } != null) {
+                while (errorReader.readLine()?.also { s = it } != null) {
                     errorMsg.append(s).append("\n")
                 }
             }
@@ -64,5 +64,6 @@ object CmdUtils {
         return Result(successMsg.toString(), errorMsg.toString())
     }
 
-    class Result(var successMsg: String, var errorMsg: String)
 }
+
+data class Result(var successMsg: String, var errorMsg: String)

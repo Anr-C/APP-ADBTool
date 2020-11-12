@@ -3,16 +3,28 @@ package com.lckiss.adbtools
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.lckiss.adbtools.util.CmdUtils
+import androidx.lifecycle.lifecycleScope
+import com.lckiss.adbtools.util.AdbdCommand
 import com.lckiss.adbtools.util.WifiUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
 
+    private val adbdCommand by lazy {
+        AdbdCommand()
+    }
+
     private val sp by lazy { getSharedPreferences("Setting", Context.MODE_PRIVATE) }
+
+    private val isRoot
+        get() = sp.getBoolean(KEY_IS_ROOT, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,25 +33,24 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     private fun initView() {
-        rootSwitchCompt.isChecked = sp.getBoolean(KEY_IS_ROOT, false)
         rootSwitchCompt.setOnCheckedChangeListener(this)
         adbSwitchCompt.setOnCheckedChangeListener(this)
-        val running = isRunning
-        adbSwitchCompt.isChecked = running
-        if (running) {
-            refreshTvInfo()
+
+        lifecycleScope.launch {
+            refreshRoot()
+
+            val running = adbdCommand.isRunning()
+            adbSwitchCompt.isChecked = running
+            if (running) {
+                refreshTvInfo()
+            }
         }
     }
-
-    private val isRunning: Boolean
-        get() = CmdUtils.execute(arrayOf(
-                "getprop init.svc.adbd"
-        )).successMsg.contains("running")
 
     override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         when (buttonView.id) {
             R.id.adbSwitchCompt -> {
-                if (!sp.getBoolean(KEY_IS_ROOT, false)) {
+                if (!isRoot) {
                     adbSwitchCompt.isChecked = false
                     msg.text = getString(R.string.root_un_grant)
                     status_msg.text = resources.getString(R.string.status, getString(R.string.root_deny))
@@ -52,15 +63,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 }
             }
             R.id.rootSwitchCompt -> if (isChecked) {
-                val result = CmdUtils.execute(arrayOf(
-                        "ls /data"
-                ))
-                if (!TextUtils.isEmpty(result.successMsg)) {
-                    sp.edit().putBoolean(KEY_IS_ROOT, true).apply()
-                } else {
-                    sp.edit().putBoolean(KEY_IS_ROOT, false).apply()
-                    rootSwitchCompt.isChecked = false
-                    msg.text = getString(R.string.root_deny)
+                lifecycleScope.launch {
+                    refreshRoot()
                 }
             } else {
                 sp.edit().putBoolean(KEY_IS_ROOT, false).apply()
@@ -70,35 +74,43 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         }
     }
 
+    private suspend fun refreshRoot() {
+        val result = adbdCommand.fetchRoot()
+        withContext(Dispatchers.Main) {
+            sp.edit().putBoolean(KEY_IS_ROOT, result).apply()
+            rootSwitchCompt.isChecked = result
+            if (!result) {
+                msg.text = getString(R.string.root_deny)
+            }
+        }
+    }
+
     private fun disconnect() {
-        val cmd = arrayOf(
-                "stop adbd"
-        )
-        val result = CmdUtils.execute(cmd)
-        status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_not_running))
-        msg.text = getString(R.string.adbd_closed)
-        val successMsg = result.successMsg
-        val errorMsg = result.errorMsg
-        if (!TextUtils.isEmpty(errorMsg)) {
-            errorDialog(errorMsg)
+        lifecycleScope.launch {
+            val result = adbdCommand.stopAdbd()
+            status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_not_running))
+            msg.text = getString(R.string.adbd_closed)
+            val successMsg = result.successMsg
+            Log.d(TAG, "connect: $successMsg")
+            val errorMsg = result.errorMsg
+            if (!TextUtils.isEmpty(errorMsg)) {
+                errorDialog(errorMsg)
+            }
         }
     }
 
     private fun connect() {
-        val p = port.text.toString().trim { it <= ' ' }
-        val cmd = arrayOf(
-                "setprop service.adb.tcp.port $p",
-                "stop adbd",
-                "start adbd"
-        )
-        val result = CmdUtils.execute(cmd)
-        val successMsg = result.successMsg
-        val errorMsg = result.errorMsg
-        if (!TextUtils.isEmpty(errorMsg)) {
-            errorDialog(errorMsg)
-            return
+        lifecycleScope.launch {
+            val result = adbdCommand.connectAdbd(port.text.trim().toString())
+            val successMsg = result.successMsg
+            Log.d(TAG, "connect: $successMsg")
+            val errorMsg = result.errorMsg
+            if (errorMsg.isNotEmpty()) {
+                errorDialog(errorMsg)
+            } else {
+                refreshTvInfo()
+            }
         }
-        refreshTvInfo()
     }
 
     private fun refreshTvInfo() {
