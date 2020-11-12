@@ -3,7 +3,7 @@ package com.lckiss.adbtools.util
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AdbdCommand {
+class Adbd {
 
     suspend fun isRunning(): Boolean {
         return withContext(Dispatchers.IO) {

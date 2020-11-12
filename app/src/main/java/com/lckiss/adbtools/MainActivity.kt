@@ -8,8 +8,8 @@ import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.lckiss.adbtools.util.AdbdCommand
-import com.lckiss.adbtools.util.WifiUtils
+import com.lckiss.adbtools.util.Adbd
+import com.lckiss.adbtools.util.Net
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
 
     private val adbdCommand by lazy {
-        AdbdCommand()
+        Adbd()
     }
 
     private val sp by lazy { getSharedPreferences("Setting", Context.MODE_PRIVATE) }
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             val running = adbdCommand.isRunning()
             adbSwitchCompt.isChecked = running
             if (running) {
-                refreshTvInfo()
+                refreshDisplayInfo()
             }
         }
     }
@@ -56,10 +56,12 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                     status_msg.text = resources.getString(R.string.status, getString(R.string.root_deny))
                     return
                 }
-                if (isChecked) {
-                    connect()
-                } else {
-                    disconnect()
+                lifecycleScope.launch {
+                    if (isChecked) {
+                        connect()
+                    } else {
+                        disconnect()
+                    }
                 }
             }
             R.id.rootSwitchCompt -> if (isChecked) {
@@ -85,9 +87,9 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         }
     }
 
-    private fun disconnect() {
-        lifecycleScope.launch {
-            val result = adbdCommand.stopAdbd()
+    private suspend fun disconnect() {
+        val result = adbdCommand.stopAdbd()
+        withContext(Dispatchers.Main) {
             status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_not_running))
             msg.text = getString(R.string.adbd_closed)
             val successMsg = result.successMsg
@@ -99,31 +101,34 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         }
     }
 
-    private fun connect() {
-        lifecycleScope.launch {
-            val result = adbdCommand.connectAdbd(port.text.trim().toString())
+    private suspend fun connect() {
+        val result = adbdCommand.connectAdbd(port.text.trim().toString())
+        withContext(Dispatchers.Main) {
             val successMsg = result.successMsg
             Log.d(TAG, "connect: $successMsg")
             val errorMsg = result.errorMsg
             if (errorMsg.isNotEmpty()) {
                 errorDialog(errorMsg)
             } else {
-                refreshTvInfo()
+                refreshDisplayInfo()
             }
         }
     }
 
-    private fun refreshTvInfo() {
-        val p = port.text.toString().trim { it <= ' ' }
-        val ipAddress = WifiUtils.getIpAddress(this)
-        val msgRes: String
-        msgRes = if (p == DEFAULT_PORT) {
-            resources.getString(R.string.status_msg_without_port, ipAddress)
-        } else {
-            resources.getString(R.string.status_msg, ipAddress, p)
+    private suspend fun refreshDisplayInfo() {
+        val ipAddress = withContext(Dispatchers.IO) {
+            Net.getIpAddress(this@MainActivity)
         }
-        msg.text = msgRes
-        status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_running))
+        withContext(Dispatchers.Main) {
+            val p = port.text.toString().trim { it <= ' ' }
+            val msgRes = if (p == DEFAULT_PORT) {
+                resources.getString(R.string.status_msg_without_port, ipAddress)
+            } else {
+                resources.getString(R.string.status_msg, ipAddress, p)
+            }
+            msg.text = msgRes
+            status_msg.text = resources.getString(R.string.status, getString(R.string.adbd_running))
+        }
     }
 
     private fun errorDialog(msg: String) {

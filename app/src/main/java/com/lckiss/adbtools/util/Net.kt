@@ -3,7 +3,7 @@ package com.lckiss.adbtools.util
 import android.content.Context
 import android.net.wifi.WifiManager
 
-object WifiUtils {
+object Net {
     /**
      * 获取手机IP地址
      * 必须连上wifi
