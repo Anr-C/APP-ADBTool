@@ -1,121 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:background="@drawable/corners"
-    android:layout_height="wrap_content">
+    android:layout_width="286dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/main_corners">
 
-    <RelativeLayout
-        android:id="@+id/title"
+    <View
+        android:id="@+id/title_bg"
         android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/main_title_bg"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:background="@color/colorPrimary"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:theme="@style/MyTextColor">
+        android:layout_marginLeft="12dp"
+        android:text="@string/fun_wifi_debug_title"
+        android:textColor="@android:color/white"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@id/title_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/title_bg" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WIFI调试"
-            android:textSize="23sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:text="@string/string_root"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/title_bg"
+        app:layout_constraintEnd_toStartOf="@id/rootSwitchCompt"
+        app:layout_constraintTop_toTopOf="@id/title_bg" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/rootSwitchCompt"
-            android:text="ROOT"
-            android:textSize="18sp" />
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/rootSwitchCompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:theme="@style/SwitchThemeWhite"
+        app:layout_constraintBottom_toBottomOf="@id/title_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/title_bg"
+        app:showText="false"
+        app:switchMinWidth="52dp" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/rootSwitchCompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:theme="@style/MySwitchTheme"
-            app:showText="false" />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/debug_switch_summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/debug_switch_summary"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_bg" />
 
-    <RelativeLayout
-        android:id="@+id/status"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/adbSwitchCompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:theme="@style/SwitchThemeDefault"
+        app:layout_constraintBottom_toBottomOf="@id/debug_switch_summary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/debug_switch_summary"
+        app:showText="false"
+        app:switchMinWidth="52dp" />
+
+    <TextView
+        android:id="@+id/adb_port_summary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:text="@string/adb_port_summary"
+        android:textSize="17sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/debug_switch_summary" />
+
+    <EditText
+        android:id="@+id/port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="12dp"
+        android:autofillHints="@string/adb_default_port"
+        android:hint="@string/adb_default_port"
+        android:inputType="number"
+        android:text="@string/adb_default_port"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="@id/adb_port_summary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/adb_port_summary" />
+
+    <View
+        android:id="@+id/divide_line"
         android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="#82424242"
+        app:layout_constraintTop_toBottomOf="@id/adb_port_summary" />
+
+
+    <TextView
+        android:id="@+id/status_msg"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:layout_centerVertical="true"
-        android:padding="10dp">
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="10dp"
+        android:text="ADB状态：未开启"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divide_line" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="开启状态"
-            android:textSize="17sp" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/adbSwitchCompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:theme="@style/MySwitchThemeS"
-            app:showText="false" />
-
-        <LinearLayout
-            android:id="@+id/port_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/adbSwitchCompt"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:text="自定义端口："
-                android:textSize="17sp" />
-
-            <EditText
-                android:id="@+id/port"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="5555"
-                android:inputType="number"
-                android:textSize="17sp" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/port_ll"
-            android:background="#82424242" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/msg"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/status"
-        android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp">
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:text="您已关闭ADB调试！"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_msg" />
 
-        <TextView
-            android:id="@+id/status_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/status"
-            android:text="ADB状态：未开启"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="您已关闭ADB调试！"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

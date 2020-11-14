@@ -12,10 +12,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="MyTextColor">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-    <style name="MySwitchTheme">
+
+    <style name="SwitchThemeWhite">
         <!--switch 打开时的拇指按钮的颜色 轨迹颜色默认为30%这个颜色 -->
         <item name="colorControlActivated">@android:color/white</item>
         <!-- Inactive thumb color switch关闭时的拇指按钮的颜色 -->
@@ -24,7 +22,7 @@
         <item name="android:colorForeground">@android:color/white</item>
     </style>
 
-    <style name="MySwitchThemeS">
+    <style name="SwitchThemeDefault">
         <!--switch 打开时的拇指按钮的颜色 轨迹颜色默认为30%这个颜色 -->
         <item name="colorControlActivated">@color/colorPrimary</item>
         <!-- Inactive thumb color switch关闭时的拇指按钮的颜色 -->

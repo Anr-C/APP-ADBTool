@@ -10,4 +10,10 @@
     <string name="adbd_not_running">未开启</string>
     <string name="root_deny">未开启</string>
     <string name="root_un_grant">ROOT权限未授予！无法操作！</string>
+    <string name="root_grant_message">若出现授权弹窗，请允许！</string>
+    <string name="fun_wifi_debug_title">WIFI调试</string>
+    <string name="string_root">ROOT</string>
+    <string name="adb_port_summary">自定义端口：</string>
+    <string name="debug_switch_summary">开启状态</string>
+    <string name="adb_default_port">5555</string>
 </resources>

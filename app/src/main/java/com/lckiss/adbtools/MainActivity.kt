@@ -12,6 +12,7 @@ import com.lckiss.adbtools.util.Adbd
 import com.lckiss.adbtools.util.Net
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         adbSwitchCompt.setOnCheckedChangeListener(this)
 
         lifecycleScope.launch {
-            refreshRoot()
+            adbSwitchCompt.isChecked = isRoot
 
             val running = adbdCommand.isRunning()
             adbSwitchCompt.isChecked = running
@@ -80,9 +81,10 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         val result = adbdCommand.fetchRoot()
         withContext(Dispatchers.Main) {
             sp.edit().putBoolean(KEY_IS_ROOT, result).apply()
+            delay(1000)
             rootSwitchCompt.isChecked = result
             if (!result) {
-                msg.text = getString(R.string.root_deny)
+                msg.text = getString(R.string.root_grant_message)
             }
         }
     }
