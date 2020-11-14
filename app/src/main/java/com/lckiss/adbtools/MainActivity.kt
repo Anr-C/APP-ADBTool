@@ -1,15 +1,20 @@
 package com.lckiss.adbtools
 
+import android.animation.Animator
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.lckiss.adbtools.util.Adbd
 import com.lckiss.adbtools.util.Net
+import com.lckiss.adbtools.util.createCircularReveal
+import com.lckiss.adbtools.util.dp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,15 +41,17 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     private fun initView() {
         rootSwitchCompt.setOnCheckedChangeListener(this)
         adbSwitchCompt.setOnCheckedChangeListener(this)
-
         lifecycleScope.launch {
-            adbSwitchCompt.isChecked = isRoot
-
+            rootSwitchCompt.isChecked = isRoot
             val running = adbdCommand.isRunning()
             adbSwitchCompt.isChecked = running
             if (running) {
                 refreshDisplayInfo()
             }
+        }
+        content.post {
+            content.createCircularReveal(0, 0, 30f.dp, content.measuredWidth.toFloat())
+            content.clearFocus()
         }
     }
 
