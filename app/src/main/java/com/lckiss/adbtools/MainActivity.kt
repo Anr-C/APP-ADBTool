@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+class MainActivity : BaseActivity(), CompoundButton.OnCheckedChangeListener {
 
     private val adbdCommand by lazy {
         Adbd()
@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        doInitAnim(content)
         initView()
     }
 
@@ -45,10 +46,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             if (running) {
                 refreshDisplayInfo()
             }
-        }
-        content.post {
-            content.createCircularReveal(0, 0, 30f.dp, content.measuredWidth.toFloat())
-            content.clearFocus()
         }
     }
 
@@ -139,9 +136,9 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
     private fun errorDialog(msg: String) {
         AlertDialog.Builder(this)
-                .setTitle(R.string.error_dialog_title)
-                .setMessage(msg)
-                .setPositiveButton(getString(R.string.btn_ok), null).show()
+            .setTitle(R.string.error_dialog_title)
+            .setMessage(msg)
+            .setPositiveButton(getString(R.string.btn_ok), null).show()
     }
 
     companion object {
