@@ -13,16 +13,15 @@ abstract class BaseActivity : AppCompatActivity() {
     private var onGlobalLayout: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var animator: Animator? = null
 
-    fun doInitAnim(v:View) {
-        val sourceBounds = intent?.sourceBounds
+    fun doInitAnim(v: View) {
         v.visibility = View.INVISIBLE
         onGlobalLayout = ViewTreeObserver.OnGlobalLayoutListener { //此时既是开始揭露动画的最佳时机
             if (isInAnimation) return@OnGlobalLayoutListener
             isInAnimation = true
             val measuredRadio = v.width
             animator = v.createCircularReveal(
-                sourceBounds?.centerX() ?: 0,
-                sourceBounds?.centerY() ?: measuredRadio,
+                0,
+                measuredRadio,
                 0f,
                 measuredRadio * 1f,
                 onEnd = {
