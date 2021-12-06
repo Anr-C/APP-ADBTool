@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import com.lckiss.adbtools.util.createCircularReveal
+import kotlin.math.sqrt
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -15,15 +16,16 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun doInitAnim(v: View) {
         v.visibility = View.INVISIBLE
-        onGlobalLayout = ViewTreeObserver.OnGlobalLayoutListener { //此时既是开始揭露动画的最佳时机
+        onGlobalLayout = ViewTreeObserver.OnGlobalLayoutListener {
+            //此时既是开始揭露动画的最佳时机
             if (isInAnimation) return@OnGlobalLayoutListener
             isInAnimation = true
-            val measuredRadio = v.width
+            val measuredRadio = sqrt(v.width * v.width * 1.0 + v.height * v.height)
             animator = v.createCircularReveal(
                 0,
-                measuredRadio,
+                v.height,
                 0f,
-                measuredRadio * 1f,
+                measuredRadio.toFloat(),
                 onEnd = {
                     v.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayout)
                     isInAnimation = false

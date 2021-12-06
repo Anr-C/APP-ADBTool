@@ -6,12 +6,9 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.lckiss.adbtools.util.Adbd
 import com.lckiss.adbtools.util.Net
-import com.lckiss.adbtools.util.createCircularReveal
-import com.lckiss.adbtools.util.dp
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -39,6 +36,8 @@ class MainActivity : BaseActivity(), CompoundButton.OnCheckedChangeListener {
     private fun initView() {
         rootSwitchCompt.setOnCheckedChangeListener(this)
         adbSwitchCompt.setOnCheckedChangeListener(this)
+        val lastPort = sp.getString(KEY_PORT, DEFAULT_PORT) ?: DEFAULT_PORT
+        port.setText(lastPort)
         lifecycleScope.launch {
             rootSwitchCompt.isChecked = isRoot
             val running = adbdCommand.isRunning()
@@ -105,7 +104,9 @@ class MainActivity : BaseActivity(), CompoundButton.OnCheckedChangeListener {
     }
 
     private suspend fun connect() {
-        val result = adbdCommand.connectAdbd(port.text.trim().toString())
+        val port = port.text.trim().toString()
+        sp.edit().putString(KEY_PORT, port).apply()
+        val result = adbdCommand.connectAdbd(port)
         withContext(Dispatchers.Main) {
             val successMsg = result.successMsg
             Log.d(TAG, "connect: $successMsg")
@@ -145,5 +146,6 @@ class MainActivity : BaseActivity(), CompoundButton.OnCheckedChangeListener {
         private const val TAG = "MainActivity"
         private const val DEFAULT_PORT = "5555"
         private const val KEY_IS_ROOT = "isRoot"
+        private const val KEY_PORT = "port"
     }
 }
